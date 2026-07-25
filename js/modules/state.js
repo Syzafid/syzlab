@@ -79,14 +79,16 @@ export let isARScanned = false;
 export function setIsARScanned(val) { isARScanned = val; }
 
 // Space Observatory State
-export let matahari, planetMiller, stasiunISS, ringNebula, meteoroid, roketCone, spaceGroup;
+export let spaceGroup = null;
+export function setSpaceGroup(val) { spaceGroup = val; }
+export let matahari, planetMiller, stasiunISS, ringNebula, meteoroid, roketCone;
 export function setMatahari(val) { matahari = val; }
 export function setPlanetMiller(val) { planetMiller = val; }
 export function setStasiunISS(val) { stasiunISS = val; }
 export function setRingNebula(val) { ringNebula = val; }
 export function setMeteoroid(val) { meteoroid = val; }
 export function setRoketCone(val) { roketCone = val; }
-export function setSpaceGroup(val) { spaceGroup = val; }
+
 
 // Cyberpunk Showroom State
 export let cyberSamurai, flyingCar, busterDrone, scifiTowers;

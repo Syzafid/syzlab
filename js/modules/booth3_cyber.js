@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {
-  scene, interactiveObjects,
+  scene, interactiveObjects, flyingCar, busterDrone, scifiTowers, primBox, primSphere, primCyl, primCone,
   setCyberSamurai, setFlyingCar, setBusterDrone, setScifiTowers,
   setPrimBox, setPrimSphere, setPrimCyl, setPrimCone,
   cylFlying, setCylFlying, setCylFlyProgress
@@ -8,6 +8,7 @@ import {
 import { showHUDCard } from './interactivity.js';
 import { teleportPlayer } from './physics.js';
 import { createSubWorldHeader } from './gallery.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
 
 let gltfLoader = null;
 
@@ -397,8 +398,8 @@ export function buildCyberpunkBooth() {
 }
 
 export function updateCyberpunkAnimations(t) {
-  if (flyingCar) flyingCar.position.y = 1.3 + Math.sin(t * 1.5) * 0.12;
-  if (busterDrone) {
+  if (typeof flyingCar !== 'undefined' && flyingCar) flyingCar.position.y = 1.3 + Math.sin(t * 1.5) * 0.12;
+  if (typeof busterDrone !== 'undefined' && busterDrone) {
     busterDrone.position.y = 1.3 + Math.cos(t * 2.0) * 0.12;
     busterDrone.rotation.y += 0.008;
   }

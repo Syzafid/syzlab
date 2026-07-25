@@ -3,6 +3,7 @@ import {
 } from './state.js';
 
 let raycastFrameCount = 0;
+let hoverStartTime = 0;
 
 export function showHUDCard(tag, title, desc) {
   const card = document.getElementById('hud-card');
@@ -33,6 +34,8 @@ export function updateRaycaster() {
       if (hoveredObject !== topObject) {
         if (hoveredObject && hoveredObject.userData.onUnhover) hoveredObject.userData.onUnhover();
         setHoveredObject(topObject);
+        // Record hover start time for auto-click after 5 seconds
+        hoverStartTime = performance.now();
         if (hoveredObject.userData.onHover) hoveredObject.userData.onHover();
       }
       if (crosshair) crosshair.classList.add('hovered');
@@ -43,6 +46,8 @@ export function updateRaycaster() {
   if (hoveredObject) {
     if (hoveredObject.userData.onUnhover) hoveredObject.userData.onUnhover();
     setHoveredObject(null);
+    // Reset hover timer when leaving object
+    hoverStartTime = 0;
   }
   if (crosshair) crosshair.classList.remove('hovered');
 }
@@ -55,4 +60,17 @@ export function triggerRaycastClick() {
     return true;
   }
   return false;
+}
+
+// Check hover duration and auto‑click after 5 seconds
+export function checkHoverAutoClick() {
+  if (hoveredObject && hoverStartTime) {
+    const elapsed = performance.now() - hoverStartTime;
+    if (elapsed >= 5000) {
+      // Auto‑click the hovered object
+      triggerRaycastClick();
+      // Prevent repeated auto‑clicks until hover resets
+      hoverStartTime = 0;
+    }
+  }
 }

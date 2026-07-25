@@ -1,14 +1,14 @@
 import * as THREE from 'three';
-import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-import { Octree } from './jsm/math/Octree.js';
-import { Capsule } from './jsm/math/Capsule.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
+import { Octree } from 'https://unpkg.com/three@0.152.2/examples/jsm/math/Octree.js';
+import { Capsule } from 'https://unpkg.com/three@0.152.2/examples/jsm/math/Capsule.js';
 
 import {
   scene, setScene, camera, setCamera, renderer, setRenderer, clock, setClock,
   playerCollider, playerVelocity, playerDirection, keyStates, animatedObjects
 } from './modules/state.js';
 import { initPhysicsSpheres, updateControls, updatePlayer, updateSpheres, throwBall } from './modules/physics.js';
-import { updateRaycaster, triggerRaycastClick } from './modules/interactivity.js';
+import { updateRaycaster, triggerRaycastClick, checkHoverAutoClick } from './modules/interactivity.js';
 import { setupUIControls } from './modules/ui.js';
 import { setupAudioAndVideo } from './modules/media.js';
 import { buildGalleryWorld } from './modules/gallery.js';
@@ -167,6 +167,8 @@ function animate() {
 
   // Raycaster & Interactivity
   updateRaycaster();
+  // Auto‑click after 5 s hover
+  checkHoverAutoClick();
 
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
