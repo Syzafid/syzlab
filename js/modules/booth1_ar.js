@@ -281,33 +281,90 @@ export function buildARCardBooth() {
     interactiveObjects.push(webPanelMesh);
   });
 
+  // Helper vector canvas icon generator for Instagram
+  function getInstagramIconTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256; canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 256, 256);
+    ctx.lineWidth = 18;
+    ctx.strokeStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.roundRect(32, 32, 192, 192, 48);
+    ctx.stroke();
+    ctx.lineWidth = 16;
+    ctx.beginPath();
+    ctx.arc(128, 128, 46, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(178, 78, 12, 0, Math.PI * 2);
+    ctx.fill();
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.generateMipmaps = false;
+    tex.minFilter = THREE.LinearFilter;
+    return tex;
+  }
+
+  // Helper vector canvas icon generator for Website
+  function getWebsiteIconTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256; canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, 256, 256);
+    ctx.lineWidth = 16;
+    ctx.strokeStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(128, 128, 84, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(44, 128);
+    ctx.lineTo(212, 128);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(128, 128, 84, 36, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(128, 44);
+    ctx.lineTo(128, 212);
+    ctx.stroke();
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.generateMipmaps = false;
+    tex.minFilter = THREE.LinearFilter;
+    return tex;
+  }
+
   // 3️⃣ Social Media Hologram Interactive Buttons
   const socialButtons = [
-    { name: "Website",   color: 0xdddddd, x: -2.5, url: "https://syzaf.dev",                                       tag: "syzaf.dev",              icon: null },
-    { name: "Instagram", color: 0xE1306C, x: -1.5, url: "https://instagram.com/syzaf.id",                           tag: "@syzaf.id",               icon: null },
+    { name: "Website",   color: 0x1e293b, x: -2.5, url: "https://syzaf.dev",                                       tag: "syzaf.dev",              texture: getWebsiteIconTexture() },
+    { name: "Instagram", color: 0xE1306C, x: -1.5, url: "https://instagram.com/syzaf.id",                           tag: "@syzaf.id",               texture: getInstagramIconTexture() },
     { name: "WhatsApp",  color: 0x25D366, x: -0.5, url: "https://wa.me/6285767973635",                              tag: "+62 857-6797-3635",       icon: "./assets/ar-card/whatsapp.png" },
     { name: "LinkedIn",  color: 0x0077B5, x:  0.5, url: "https://linkedin.com/in/syafrizal-amri-fajar-a839b127a/", tag: "Syafrizal Amri Fajar",    icon: "./assets/ar-card/linkedin.png" },
-    { name: "GitHub",    color: 0xffffff, x:  1.5, url: "https://github.com/syzafid",                               tag: "@syzafid",                icon: "./assets/ar-card/github.png" },
+    { name: "GitHub",    color: 0x334155, x:  1.5, url: "https://github.com/syzafid",                               tag: "@syzafid",                icon: "./assets/ar-card/github.png" },
     { name: "Email",     color: 0xEA4335, x:  2.5, url: "mailto:syafrizalaf93@gmail.com",                           tag: "syafrizalaf93@gmail.com", icon: "./assets/ar-card/email.png" },
   ];
 
   socialButtons.forEach((btn, idx) => {
-    const btnMat = new THREE.MeshStandardMaterial({ color: btn.color, roughness: 0.12, metalness: 0.75, emissive: btn.color, emissiveIntensity: 0.1 });
+    const btnMat = new THREE.MeshStandardMaterial({ color: btn.color, roughness: 0.12, metalness: 0.75, emissive: btn.color, emissiveIntensity: 0.15 });
     const btnMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.12, 32), btnMat);
     btnMesh.position.set(btn.x, -1.5, 1.8);
     btnMesh.rotation.x = Math.PI / 2;
     btnMesh.castShadow = true;
 
-    if (btn.icon) {
-      textureLoader.load(btn.icon, (tex) => {
-        const iconMesh = new THREE.Mesh(
-          new THREE.PlaneGeometry(0.38, 0.38),
-          new THREE.MeshBasicMaterial({ map: tex, transparent: true })
-        );
-        iconMesh.position.set(0, 0.07, 0);
-        iconMesh.rotation.x = -Math.PI / 2;
-        btnMesh.add(iconMesh);
-      });
+    function attachIconMesh(tex) {
+      const iconMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.38, 0.38),
+        new THREE.MeshBasicMaterial({ map: tex, transparent: true })
+      );
+      iconMesh.position.set(0, 0.07, 0);
+      iconMesh.rotation.x = -Math.PI / 2;
+      btnMesh.add(iconMesh);
+    }
+
+    if (btn.texture) {
+      attachIconMesh(btn.texture);
+    } else if (btn.icon) {
+      textureLoader.load(btn.icon, (tex) => attachIconMesh(tex));
     }
 
     btnMesh.userData = {
