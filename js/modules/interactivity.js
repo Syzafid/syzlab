@@ -16,9 +16,9 @@ export function showHUDCard(tag, title, desc) {
 }
 
 export function updateRaycaster() {
-  // Throttle raycasting to alternate frames for maximum CPU efficiency
+  // Throttle raycasting to alternate frames for 50% CPU raycast savings
   raycastFrameCount++;
-  if (raycastFrameCount % 2 !== 0 && hoveredObject) return;
+  if (raycastFrameCount % 2 !== 0) return;
 
   raycaster.setFromCamera(screenCenter, camera);
   const intersects = raycaster.intersectObjects(interactiveObjects, true);

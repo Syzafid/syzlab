@@ -1,60 +1,87 @@
-# Syzlab
+# SyzLab — Metaverse Gallery 3D
 
 ## Gambaran Umum
-Syzlab adalah **pameran 3D berbasis WebGL** yang dibangun dengan **Three.js**. Lingkungan ini menawarkan interaksi FPS‑style dengan tiga stan pameran berbeda:
+**SyzLab** adalah galeri metaverse 3D interaktif berbasis WebGL dan Three.js yang menyajikan pameran multimedia berarsitektur modular. Aplikasi ini menggabungkan navigasi *First-Person Shooter* (FPS), simulasi fisika, animasi 3D, integrasi WebAR, dan audio interaktif dalam satu lingkungan metaverse yang terintegrasi.
 
-- **Stan AR Card** – menampilkan kartu nama 3D yang dapat dipindai via WebAR.
-- **Stan Observatorium Ruang** – menampilkan tata surya mini dengan matahari, planet, ISS, roket, meteoroid, dan lainnya.
-- **Stan Cyberpunk** – menampilkan kota futuristik dengan model GLTF high‑poly, layar video, dan portal teleportasi.
+---
 
-Semua aset, shader, audio, dan komponen UI dikelola sebagai ES module di dalam `js/modules/`. Aplikasi ini berjalan murni di browser – tidak memerlukan kode sisi server.
+## Fitur Utama & Ruangan Eksibisi
 
-## Struktur Folder
-```
-syzlab/
-├─ css/                     # Styling (glassmorphism UI, HUD, crosshair)
+### 🏛️ Lobby Utama
+- **Sistem Navigasi FPS**: Kontrol pergerakan `WASD`, melompat `Spasi`, serta orientasi pandangan kursor (*Pointer Lock*).
+- **Audio Interstellar & BoomBox**: Musik latar *Interstellar* yang dapat diatur volumenya (0% – 100%) dengan berinteraksi langsung pada model 3D BoomBox.
+- **Arena Parkour Sci-Fi**: Pijakan melayang interaktif yang diposisikan secara terukur di sepanjang dinding galeri.
+- **Simulasi Fisika & Poin**: Fitur pelemparan bola fisika dan pengumpulan kristal poin cyan (+10) dan kristal emas langka (+50).
+
+### 🃏 Bilik 1: AR Card
+- **Kartu Nama AR Interaktif**: Memindai kartu nama 3D Syafrizal Amri Fajar dengan kursor untuk menampilkan elemen profil melayang (*smooth spring reveal*).
+- **Maskot Owl 3D (Spirit Animal)**: Burung hantu 3D beranimasi yang merupakan *spirit animal* Syafrizal Amri Fajar, simbol kebijaksanaan, fokus, dan ketekunan di dunia teknologi.
+- **Panel Portofolio & Tombol Sosmed Wave**: Pratinjau situs `syzaf.dev` serta 6 tombol hologram media sosial dengan animasi gelombang 3D dan pendaran neon.
+- **Integrasi WebAR Live**: Akses langsung ke kamera WebAR interaktif berbasis AR.js (`ar-live.html`).
+
+### 🪐 Bilik 2: Space Observatory
+- **Megastruktur Astronomi**: Ruangan kubah 60m × 60m × 24m dengan tata surya 3D interaktif.
+- **Objek Luar Angkasa**: Matahari Raksasa (radius 6m) dengan korona plasma, Planet Miller, Stasiun ISS, Roket Multi-Stage, Komet, 25 Sabuk Asteroid berputar, dan Ring Nebula.
+- **Anjungan Pandang**: Tangga dan platform observasi lantai atas untuk mengamati seluruh tata surya dari ketinggian.
+
+### 🤖 Bilik 3: Cyberpunk VR Hub
+- **Hub Portal Black Hole**: Pusat portal futuristik dengan 3 portal teleportasi simetris:
+  - **Portal 1 (Bilik 3A)**: Arena eksperimen geometri 3D primitif (Kubus, Bola, Silinder Terbang, dan Kerucut Rotasi).
+  - **Portal 2 (Scene 2)**: Integrasi panorama 360° VR standalone (`scene2.html`).
+  - **Portal 3 (Bilik 3C)**: Showroom model GLTF Sci-Fi (Cyber Samurai, Mobil Terbang, Buster Drone, dan Menara Sci-Fi).
+- **Sistem Teleportasi Presisi**: Saat pemain berpindah melalui portal, posisi spawn dan orientasi kamera otomatis menghadap ke dalam ruangan dengan portal di belakang pemain (*portal exit orientation*).
+
+---
+
+## Struktur Proyek
+
+```text
+SyzLab/
+├─ css/                     # Styling Glassmorphism UI, Crosshair, HUD, Toast Notification
 ├─ js/
-│   ├─ app.js               # Titik masuk, inisialisasi & loop render
-│   ├─ components.js        # Komponen A‑Frame khusus (dipakai di scene2.html)
-│   ├─ modules/             # Kode modular ES
-│   │   ├─ state.js          # Manajemen state global
-│   │   ├─ physics.js        # Fisika pemain, kolisi & bola lempar
-│   │   ├─ interactivity.js  # Ray‑caster dan penanganan klik
-│   │   ├─ ui.js             # Binding UI, modal, HUD
-│   │   ├─ media.js          # Setup audio & video
-│   │   ├─ gallery.js        # Arsitektur dunia (dinding, lantai, lengkungan)
-│   │   ├─ booth1_ar.js      # Implementasi stan AR Card
-│   │   ├─ booth2_space.js   # Implementasi stan Observatorium Ruang
-│   │   ├─ booth3_cyber.js   # Implementasi stan Cyberpunk
-│   │   ├─ collectibles.js   # Sistem koleksi kristal & poin
-│   │   ├─ parkour.js        # Mekanik parkour (pad lompat)
-│   │   └─ panorama.js       # Halaman panorama 360° terpisah
-│   └─ jsm/                 # Modul Three.js (GLTFLoader, Octree, …)
-├─ assets/                  # Model 3D, tekstur, audio, video
-├─ index.html               # Halaman utama, memuat app.js via ES modules
-├─ scene2.html              # Halaman A‑Frame 360° panorama
-├─ ar-live.html             # Halaman WebAR sederhana (AR.js + A‑Frame)
-└─ README.md                # Dokumentasi proyek (bahasa Indonesia)
+│   ├─ app.js               # Titik masuk utama, init scene, & render loop
+│   ├─ components.js        # Komponen A-Frame khusus untuk scene2.html
+│   ├─ modules/             # Modul ES (ES Modules)
+│   │   ├─ state.js          # Manajemen state global (Scene, Camera, Score, Objects)
+│   │   ├─ physics.js        # Fisika pemain, Octree collision, & player teleportation
+│   │   ├─ interactivity.js  # Raycaster interaktif & HUD Card notification
+│   │   ├─ ui.js             # Binding tombol navigasi, modal AR, & kontrol UI
+│   │   ├─ media.js          # Positional audio & BoomBox volume controller
+│   │   ├─ gallery.js        # Arsitektur galeri, dinding, lantai, & dekorasi
+│   │   ├─ booth1_ar.js      # Eksibisi Bilik 1 AR Card & Maskot Owl Spirit Animal
+│   │   ├─ booth2_space.js   # Eksibisi Bilik 2 Space Observatory Megastructure
+│   │   ├─ booth3_cyber.js   # Eksibisi Bilik 3 Cyberpunk Hub & Black Hole Portals (3A, 3C)
+│   │   ├─ collectibles.js   # Sistem kristal poin kolektibel & Web Audio SFX
+│   │   ├─ parkour.js        # Arena pijakan melayang parkour Sci-Fi
+│   │   └─ panorama.js       # Integrasi navigasi halaman panorama 360°
+│   └─ jsm/                 # Modul Three.js (GLTFLoader, Octree, Capsule)
+├─ assets/                  # Model 3D GLTF, tekstur, audio Interstellar, video
+├─ index.html               # Halaman utama Metaverse Gallery
+├─ scene2.html              # Halaman A-Frame 360° Panorama
+├─ ar-live.html             # Halaman WebAR Live Camera (AR.js + A-Frame)
+└─ README.md                # Dokumentasi proyek SyzLab
 ```
 
-## Prasyarat
-- **Node.js** (untuk menjalankan server statis, contoh: `npx serve`).
-- Browser modern dengan dukungan WebGL 2.
+---
 
-## Kontrol
-| Aksi                     | Tombol / Mouse                        |
-|--------------------------|---------------------------------------|
-| Gerak maju/mundur        | `W` / `S`                             |
-| Gerak menyamping         | `A` / `D`                             |
-| Lompat                   | `Space`                               |
-| Lempar bola              | Klik kiri (bukan pada hotspot)        |
-| Interaksi / Buka modal   | Arahkan ke objek interaktif lalu klik kiri |
-| Kunci pointer            | Klik pada kanvas (klik pertama)      |
-| Lepas kunci pointer      | `Esc` (atau klik di luar kanvas)      |
+## Optimasi Performa
 
-## Kustomisasi
-- Tambahkan atau ubah modul stan (`booth1_ar.js`, `booth2_space.js`, `booth3_cyber.js`) untuk menambah geometri, animasi, atau interaksi baru.
-- Sesuaikan UI di `js/modules/ui.js` untuk mengubah elemen HUD atau menambah menu.
-- Letakkan tekstur atau model tambahan di `assets/` dan referensikan pada modul yang relevan.
+- **Distance-Based Booth Throttling**: Kalkulasi matematika & animasi pada stan yang berada jauh dari posisi pemain secara otomatis ditunda untuk menghemat beban CPU.
+- **Raycaster 50% CPU Savings**: Pemindaian kursor interaktif dieksekusi secara efisien pada interval 2 frame sekali.
+- **Zero-GC Vector Allocation**: Vektor fisika & transformasi menggunakan objek statis pra-alokasi untuk mencegah *garbage collection lag*.
+- **CanvasTexture Memory Optimization**: Pembuatan mipmap GPU dinonaktifkan pada papan teks 2D untuk menghemat konsumsi VRAM.
 
-Selamat menjelajahi Syzlab!
+---
+
+## Kontrol Navigasi
+
+| Aksi | Tombol / Mouse |
+| :--- | :--- |
+| **Maju / Mundur** | `W` / `S` |
+| **Kiri / Kanan** | `A` / `D` |
+| **Lompat** | `Spasi` |
+| **Kunci Kursor FPS** | Klik Kiri di Layar |
+| **Lepas Kursor** | `Esc` |
+| **Lempar Bola Fisika** | Klik Kiri pada area kosong |
+| **Interaksi / Klik Objek** | Sorot kursor ke objek interaktif lalu Klik Kiri |
+| **Gaze Auto-Click** | Tatap objek interaktif selama 5 detik |

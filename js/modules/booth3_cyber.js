@@ -67,11 +67,12 @@ export function buildCyberpunkBooth() {
     "Masuk ke Portal Black Hole ini untuk berpindah ke Bilik Khusus Scene 1 (Arena Eksperimen Geometri 3D Primitif)!",
     0x9370DB,
     () => {
-      teleportPlayer(25, 57);
+      // Teleport to Room 3A: positioned at (25, 67.5) in front of 3A portal (at z=70), facing Math.PI (into room 3A, away from portal)
+      teleportPlayer(25, 67.5, Math.PI);
       showHUDCard(
-        "BILIK KHUSUS 3A — SCENE 1",
-        "🌐 Arena Eksperimen Geometri 3D Primitif",
-        "Anda berada di Bilik Khusus Scene 1! Sorot dan klik setiap bentuk geometri 3D (Kubus, Bola, Silinder Terbang, Kerucut Rotasi) untuk berinteraksi. Gunakan Portal Black Hole Kembali untuk kembali ke Bilik 3 Hub."
+        "BILIK 3A — SCENE 1",
+        "Bilik 3A — Geometri 3D Primitif",
+        "Bilik eksperimen bentuk 3D primitif: Kubus, Bola, Silinder Terbang, dan Kerucut Rotasi. Gunakan portal di belakang untuk kembali."
       );
     },
     -Math.PI / 2
@@ -100,11 +101,12 @@ export function buildCyberpunkBooth() {
     "Masuk ke Portal Black Hole ini untuk berpindah ke Bilik Khusus Scene 3 (Pameran Model GLTF Sci-Fi)!",
     0xFFD700,
     () => {
-      teleportPlayer(65, 0);
+      // Teleport to Room 3C: positioned at (65, 7.5) in front of 3C portal (at z=10), facing Math.PI (into room 3C, away from portal)
+      teleportPlayer(65, 7.5, Math.PI);
       showHUDCard(
-        "BILIK KHUSUS 3C — SCENE 3",
-        "🤖 Showroom Model GLTF Sci-Fi",
-        "Anda berada di Bilik Khusus Scene 3! Sorot dan klik setiap model 3D (Cyber Samurai, Flying Car, Buster Drone, Sci-Fi Towers) untuk memicu animasi putar 360°. Gunakan Portal Black Hole Kembali untuk kembali ke Bilik 3 Hub."
+        "BILIK 3C — SCENE 3",
+        "Bilik 3C — Showroom Model 3D",
+        "Pameran model 3D sci-fi: Cyber Samurai, Mobil Terbang, Buster Drone, dan Menara Sci-Fi. Gunakan portal di belakang untuk kembali."
       );
     },
     -Math.PI / 2
@@ -238,8 +240,9 @@ export function buildCyberpunkBooth() {
     "Masuk ke Black Hole ini untuk kembali ke Bilik 3 Cyberpunk Hub!",
     0x9370DB,
     () => {
-      teleportPlayer(25, -3);
-      showHUDCard("BILIK 3 — CYBERPUNK HUB", "🏛️ Kembali ke Bilik 3 Hub", "Anda telah kembali ke Cyberpunk Hub.");
+      // Return to Hub: spawn at (28.5, -5.5) in front of Portal 1 (at x=31, z=-5.5), facing -Math.PI/2 (into Hub, away from portal)
+      teleportPlayer(28.5, -5.5, -Math.PI / 2);
+      showHUDCard("BILIK 3 — CYBERPUNK HUB", "Bilik 3 — Cyberpunk VR Hub", "Kembali ke Hub Cyberpunk VR. Portal eksibisi berada di belakang Anda.");
     }
   );
 
@@ -387,8 +390,9 @@ export function buildCyberpunkBooth() {
     "Masuk ke Black Hole ini untuk kembali ke Bilik 3 Cyberpunk Hub!",
     0xFFD700,
     () => {
-      teleportPlayer(25, -3);
-      showHUDCard("BILIK 3 — CYBERPUNK HUB", "🏛️ Kembali ke Bilik 3 Hub", "Anda telah kembali ke Cyberpunk Hub.");
+      // Return to Hub: spawn at (28.5, 5.5) in front of Portal 3 (at x=31, z=5.5), facing -Math.PI/2 (into Hub, away from portal)
+      teleportPlayer(28.5, 5.5, -Math.PI / 2);
+      showHUDCard("BILIK 3 — CYBERPUNK HUB", "Bilik 3 — Cyberpunk VR Hub", "Kembali ke Hub Cyberpunk VR. Portal eksibisi berada di belakang Anda.");
     }
   );
 

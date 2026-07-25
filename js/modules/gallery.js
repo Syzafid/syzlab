@@ -18,6 +18,8 @@ export function createSubWorldHeader(parent, titleText, accentHex, px, py, pz) {
   ctx.fillText(titleText, 512, 64);
 
   const signTex = new THREE.CanvasTexture(canvas);
+  signTex.generateMipmaps = false;
+  signTex.minFilter = THREE.LinearFilter;
   const signMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(8.0, 1.0),
     new THREE.MeshBasicMaterial({ map: signTex, transparent: true, side: THREE.DoubleSide })

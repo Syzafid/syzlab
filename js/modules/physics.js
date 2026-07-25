@@ -10,11 +10,16 @@ const _tempDeltaPos = new THREE.Vector3();
 const _forwardVec = new THREE.Vector3();
 const _sideVec = new THREE.Vector3();
 
-export function teleportPlayer(x, z) {
+export function teleportPlayer(x, z, rotY = null) {
   playerCollider.start.set(x, 0.35, z);
   playerCollider.end.set(x, 1.65, z);
   playerVelocity.set(0, 0, 0);
-  if (camera) camera.position.copy(playerCollider.end);
+  if (camera) {
+    camera.position.copy(playerCollider.end);
+    if (rotY !== null) {
+      camera.rotation.y = rotY;
+    }
+  }
 }
 
 export function initPhysicsSpheres() {

@@ -8,11 +8,11 @@ import {
   playerCollider, playerVelocity, playerDirection, keyStates, animatedObjects
 } from './modules/state.js';
 import { initPhysicsSpheres, updateControls, updatePlayer, updateSpheres, throwBall } from './modules/physics.js';
-import { updateRaycaster, triggerRaycastClick, checkHoverAutoClick } from './modules/interactivity.js';
+import { updateRaycaster, triggerRaycastClick, checkHoverAutoClick, showHUDCard } from './modules/interactivity.js';
 import { setupUIControls } from './modules/ui.js';
 import { setupAudioAndVideo } from './modules/media.js';
 import { buildGalleryWorld } from './modules/gallery.js';
-import { buildARCardBooth } from './modules/booth1_ar.js';
+import { buildARCardBooth, updateARCardAnimations } from './modules/booth1_ar.js';
 import { buildSpaceBooth, updateSpaceAnimations } from './modules/booth2_space.js';
 import { buildCyberpunkBooth, updateCyberpunkAnimations } from './modules/booth3_cyber.js';
 import { updateCollectibles } from './modules/collectibles.js';
@@ -96,6 +96,13 @@ function init() {
 
   // 12. UI Control Bindings
   setupUIControls();
+
+  // Initial Welcome HUD Card
+  showHUDCard(
+    "LOBBY UTAMA",
+    "Lobby Utama Gallery",
+    "Ruang utama pameran metaverse Syafrizal Amri Fajar. Dilengkapi audio Interstellar, arena parkour, simulasi fisika, dan koleksi poin."
+  );
 }
 
 /* =========================================================================
@@ -108,7 +115,10 @@ function setupEventListeners() {
   const container = document.getElementById('canvas-container');
   if (container) {
     container.addEventListener('mousedown', () => {
-      document.body.requestPointerLock();
+      if (document.pointerLockElement !== document.body) {
+        const p = document.body.requestPointerLock();
+        if (p && p.catch) p.catch(() => {});
+      }
       const audioElement = document.getElementById('music');
       if (audioElement && audioElement.paused) {
         audioElement.play().catch(() => { });
@@ -161,8 +171,28 @@ function animate() {
     }
   }
 
-  updateSpaceAnimations(elapsedTime);
-  updateCyberpunkAnimations(elapsedTime);
+  // 🚀 Distance-Based Booth Animation Throttling (Zero CPU waste for distant rooms!)
+  const cx = camera.position.x;
+  const cz = camera.position.z;
+
+  // Bilik 1: AR Card Booth (around x = -25, z = 0)
+  const distSqAR = (cx + 25) * (cx + 25) + cz * cz;
+  if (distSqAR < 4900) { // Within 70m
+    updateARCardAnimations(elapsedTime, deltaTime);
+  }
+
+  // Bilik 2: Space Observatory (around x = 0, z = -45)
+  const distSqSpace = cx * cx + (cz + 45) * (cz + 45);
+  if (distSqSpace < 10000) { // Within 100m
+    updateSpaceAnimations(elapsedTime);
+  }
+
+  // Bilik 3: Cyberpunk VR Hub & Rooms 3A/3C
+  const distSqCyber = (cx - 25) * (cx - 25) + cz * cz;
+  if (distSqCyber < 10000 || cx > 40 || cz > 45) { // Active in Hub or sub-rooms 3A/3C
+    updateCyberpunkAnimations(elapsedTime);
+  }
+
   updateCollectibles(deltaTime);
 
   // Raycaster & Interactivity
