@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>AR Card – Syafrizal Amri Fajar</title>
+  <meta name="description" content="AR Business Card interaktif milik Syafrizal Amri Fajar. Arahkan kamera ke kartu nama untuk melihat profil AR.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.0/dist/aframe-extras.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #000; overflow: hidden; font-family: 'Inter', system-ui, sans-serif; }
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(145deg, #0f0f1a 0%, #1a0a1a 50%, #0a0f1a 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+      transition: opacity 0.6s ease;
+    }
+    #splash.hide { opacity: 0; pointer-events: none; }
+    .splash-logo {
+      width: 88px; height: 88px; border: 2px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(4px);
+    }
+    .splash-logo img { width: 60px; height: 60px; border-radius: 50%; }
+    .splash-name { color: #fff; font-size: 22px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+    .splash-title { color: rgba(255, 255, 255, 0.55); font-size: 13px; letter-spacing: 1.5px; }
+    .splash-btn {
+      margin-top: 8px; padding: 14px 36px; background: #fff; color: #111; border: none;
+      border-radius: 50px; font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    #hud {
+      position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.55); color: rgba(255, 255, 255, 0.75);
+      padding: 7px 18px; border-radius: 20px; font-size: 12px; pointer-events: none;
+      border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px); display: none; z-index: 800;
+    }
+    #marker-status {
+      position: fixed; bottom: 18px; right: 18px; background: rgba(0, 0, 0, 0.6); color: #fff;
+      padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; pointer-events: none;
+      border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(6px); z-index: 900; display: none;
+    }
+    #marker-status.found { color: #6fff6f; border-color: #6fff6f; }
+    #marker-status.lost { color: #ff6b6b; border-color: #ff6b6b; }
+    #no-marker {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.55); border: 1px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 14px; padding: 20px 28px; color: rgba(255, 255, 255, 0.75);
+      font-size: 13px; text-align: center; pointer-events: none; display: none; z-index: 850;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="splash">
+    <div class="splash-logo">
+      <img src="./assets/ar-card/logonobg.png" alt="Logo" />
+    </div>
+    <div class="splash-name">Syafrizal Amri Fajar</div>
+    <div class="splash-title">Software Developer · syzaf.dev</div>
+    <div class="splash-instruction">
+      Arahkan kamera ke kartu nama.<br />
+      Ketuk tombol AR untuk berinteraksi.
+    </div>
+    <button class="splash-btn" id="start-btn">Mulai AR</button>
+  </div>
+
+  <div id="hud">📷 Arahkan ke kartu · Ketuk tombol untuk aksi</div>
+
+  <div id="no-marker">
+    🔍 Marker belum terdeteksi.<br />
+    Pastikan <strong>kartu nama</strong> terlihat<br />
+    dan pencahayaan cukup.
+  </div>
+
+  <div id="marker-status" class="lost">🔴 Mencari Marker...</div>
+
+  <a-scene id="ar-scene" embedded arjs="sourceType: webcam;
+          sourceWidth: 640; sourceHeight: 480; displayWidth: 640; displayHeight: 480;
+          debugUIEnabled: false; detectionMode: mono; patternRatio: 0.90;"
+    renderer="logarithmicDepthBuffer: false; antialias: true; alpha: true;"
+    vr-mode-ui="enabled: false" style="display:none">
+
+    <a-assets timeout="8000">
+      <img id="web-preview" src="./assets/ar-card/website.png" crossorigin="anonymous" />
+      <img id="profile-img" src="./assets/ar-card/fotoProfil.png" crossorigin="anonymous" />
+      <img id="icon-wa" src="./assets/ar-card/whatsapp.png" crossorigin="anonymous" />
+      <img id="icon-li" src="./assets/ar-card/linkedin.png" crossorigin="anonymous" />
+      <img id="icon-gh" src="./assets/ar-card/github.png" crossorigin="anonymous" />
+      <img id="icon-email" src="./assets/ar-card/email.png" crossorigin="anonymous" />
+      <a-asset-item id="owl-model" src="./assets/ar-card/owl.glb"></a-asset-item>
+    </a-assets>
+
+    <a-marker id="main-marker" type="pattern" url="./assets/ar-card/marker.patt" emitevents="true" smooth="true" smoothCount="5">
+      <a-gltf-model id="owl-3d" src="#owl-model" position="1.80 0.5 -2" scale="0 0 0" rotation="-90 0 0" data-final-scale="1 1 1"></a-gltf-model>
+      <a-circle id="profile-ring" radius="0.38" color="#ffffff" position="1.80 0.02 -0.05" rotation="-90 0 0" scale="0 0 0" data-final-scale="2 2 2"></a-circle>
+      <a-circle id="profile-photo" src="#profile-img" radius="0.34" position="1.80 0.04 -0.05" rotation="-90 0 0" scale="0 0 0" data-final-scale="2 2 2"></a-circle>
+      <a-text id="name-text" value="Syafrizal\nAmri Fajar" position="2.8 0.05 -0.30" align="left" color="#ffffff" scale="0 0 0" width="3.0" rotation="-90 0 0" data-final-scale="1 1 1"></a-text>
+      <a-text id="subtitle-text" value="Software Developer" position="2.8 0.05 0.12" align="left" color="rgba(200,200,200,1)" scale="0 0 0" width="5.0" rotation="-90 0 0" data-final-scale="0.75 0.75 0.75"></a-text>
+
+      <a-entity id="btn-website" class="clickable" position="1.80 0.04 1.4" rotation="-90 0 0" scale="0 0 0" data-final-scale="1 1 1">
+        <a-plane width="1.3" height="0.26" color="#ffffff" opacity="0.97" class="clickable"></a-plane>
+      </a-entity>
+      <a-text id="label-website" value="Website" align="center" color="#111111" position="1.80 0.08 1.4" scale="0 0 0" width="2" rotation="-90 0 0" data-final-scale="1 1 1"></a-text>
+
+      <a-entity id="btn-instagram" class="clickable" position="3.4 0.04 1.4" rotation="-90 0 0" scale="0 0 0" data-final-scale="1 1 1">
+        <a-plane width="1.3" height="0.26" color="#E1306C" opacity="0.97" class="clickable"></a-plane>
+      </a-entity>
+      <a-text id="label-instagram" value="Instagram" align="center" color="#ffffff" position="3.4 0.08 1.4" scale="0 0 0" width="2" rotation="-90 0 0" data-final-scale="1 1 1"></a-text>
+
+      <a-plane id="web-panel" src="#web-preview" position="-0.88 0.15 2" width="2.44" height="1.50" rotation="-90 0 0" scale="0 0 0" data-final-scale="1 1 1"></a-plane>
+
+      <a-entity id="btn-whatsapp" class="clickable" position="1.4 0.04 2.40" rotation="-90 0 0" scale="0 0 0" data-final-scale="1 1 1">
+        <a-circle radius="0.24" color="#25D366" class="clickable"></a-circle>
+        <a-plane src="#icon-wa" width="0.30" height="0.30" position="0 0 0.05" material="transparent: true; alphaTest: 0.1;"></a-plane>
+      </a-entity>
+
+      <a-entity id="btn-linkedin" class="clickable" position="2.15 0.04 2.40" rotation="-90 0 0" scale="0 0 0" data-final-scale="1 1 1">
+        <a-circle radius="0.24" color="#0077B5" class="clickable"></a-circle>
+        <a-plane src="#icon-li" width="0.30" height="0.30" position="0 0 0.05" material="transparent: true; alphaTest: 0.1;"></a-plane>
+      </a-entity>
+
+      <a-entity id="btn-github" class="clickable" position="2.9 0.04 2.40" rotation="-90 0 0" scale="0 0 0" data-final-scale="1 1 1">
+        <a-circle radius="0.24" color="#ffffff" class="clickable"></a-circle>
+        <a-plane src="#icon-gh" width="0.30" height="0.30" position="0 0 0.05" material="transparent: true; alphaTest: 0.1;"></a-plane>
+      </a-entity>
+
+      <a-entity id="btn-email" class="clickable" position="3.65 0.04 2.40" rotation="-90 0 0" scale="0 0 0" data-final-scale="1 1 1">
+        <a-circle radius="0.24" color="#EA4335" class="clickable"></a-circle>
+        <a-plane src="#icon-email" width="0.30" height="0.30" position="0 0 0.05" material="transparent: true; alphaTest: 0.1;"></a-plane>
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera>
+      <a-entity id="gaze-cursor" cursor="fuse: true; fuseTimeout: 1500" raycaster="far: 20; objects: .clickable"
+        position="0 0 -1" geometry="primitive: ring; radiusInner: 0.002; radiusOuter: 0.010"
+        material="color: #ffffff; shader: flat; opacity: 0.85">
+      </a-entity>
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const BUTTON_LINKS = {
+      'btn-website': 'https://syzaf.dev',
+      'btn-instagram': 'https://instagram.com/syzaf.id',
+      'btn-whatsapp': 'https://wa.me/6285767973635',
+      'btn-linkedin': 'https://linkedin.com/in/syafrizal-amri-fajar-a839b127a/',
+      'btn-github': 'https://github.com/syzafid',
+      'btn-email': 'mailto:syafrizalaf93@gmail.com',
+    };
+
+    const REVEAL_SEQUENCE = [
+      { id: 'profile-ring', delay: 100, dur: 600, easing: 'easeOutElastic' },
+      { id: 'profile-photo', delay: 200, dur: 600, easing: 'easeOutElastic' },
+      { id: 'owl-3d', delay: 350, dur: 900, easing: 'easeOutElastic' },
+      { id: 'name-text', delay: 550, dur: 500, easing: 'easeOutBack' },
+      { id: 'subtitle-text', delay: 700, dur: 500, easing: 'easeOutBack' },
+      { id: 'btn-website', delay: 850, dur: 500, easing: 'easeOutBack' },
+      { id: 'label-website', delay: 850, dur: 500, easing: 'easeOutBack' },
+      { id: 'btn-instagram', delay: 1000, dur: 500, easing: 'easeOutBack' },
+      { id: 'label-instagram', delay: 1000, dur: 500, easing: 'easeOutBack' },
+      { id: 'web-panel', delay: 1150, dur: 700, easing: 'easeOutBack' },
+      { id: 'btn-whatsapp', delay: 1350, dur: 450, easing: 'easeOutElastic' },
+      { id: 'btn-linkedin', delay: 1500, dur: 450, easing: 'easeOutElastic' },
+      { id: 'btn-github', delay: 1650, dur: 450, easing: 'easeOutElastic' },
+      { id: 'btn-email', delay: 1800, dur: 450, easing: 'easeOutElastic' },
+    ];
+
+    function runRevealSequence() {
+      REVEAL_SEQUENCE.forEach(({ id, delay, dur, easing }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const finalScale = el.getAttribute('data-final-scale') || '1 1 1';
+        setTimeout(() => {
+          el.setAttribute('animation__reveal', `property: scale; from: 0 0 0; to: ${finalScale}; dur: ${dur}; easing: ${easing};`);
+        }, delay);
+      });
+    }
+
+    const splash = document.getElementById('splash');
+    const startBtn = document.getElementById('start-btn');
+    const arScene = document.getElementById('ar-scene');
+    const hud = document.getElementById('hud');
+    const noMarker = document.getElementById('no-marker');
+    const markerStatus = document.getElementById('marker-status');
+
+    startBtn.addEventListener('click', () => {
+      splash.classList.add('hide');
+      setTimeout(() => {
+        splash.style.display = 'none';
+        arScene.style.display = '';
+        hud.style.display = 'block';
+        markerStatus.style.display = 'block';
+      }, 650);
+    });
+
+    function attachListeners() {
+      Object.keys(BUTTON_LINKS).forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('click', () => {
+          const url = BUTTON_LINKS[id];
+          if (url.startsWith('mailto:')) window.location.href = url;
+          else window.open(url, '_blank');
+        });
+      });
+
+      const marker = document.getElementById('main-marker');
+      if (marker) {
+        marker.addEventListener('markerFound', () => {
+          noMarker.style.display = 'none';
+          markerStatus.className = 'found';
+          markerStatus.innerHTML = '🟢 Marker Ditemukan!';
+          runRevealSequence();
+        });
+        marker.addEventListener('markerLost', () => {
+          markerStatus.className = 'lost';
+          markerStatus.innerHTML = '🔴 Mencari Marker...';
+        });
+      }
+    }
+    document.addEventListener('DOMContentLoaded', attachListeners);
+  </script>
+</body>
+</html>

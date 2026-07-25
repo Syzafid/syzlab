@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Sci-Fi Metaverse Exhibition Gallery - Syafrizal Amri Fajar</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+
+  <!-- Audio Elements -->
+  <audio loop id="music" preload="auto" style="display: none;">
+    <source src="./assets/sound/damn.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 3D Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Center Crosshair -->
+  <div id="crosshair"></div>
+
+  <!-- Top Navigation Bar -->
+  <div id="top-nav">
+    <button class="nav-btn" id="btn-teleport-lobby">🏛️ Lobby Utama</button>
+    <button class="nav-btn" id="btn-teleport-ar">🃏 Bilik 1: AR Card</button>
+    <button class="nav-btn" id="btn-teleport-space">🪐 Bilik 2: Space Observatory</button>
+    <button class="nav-btn" id="btn-teleport-cyber">🤖 Bilik 3: Cyberpunk VR</button>
+    <button class="nav-btn ar-btn" id="btn-open-ar">📷 Kamera AR</button>
+  </div>
+
+  <!-- Top Right Score & Collectibles Counter Badge -->
+  <div id="score-badge">
+    <div class="score-item">⭐ <span id="hud-score-val">0</span> Poin</div>
+    <div class="score-item">💎 <span id="hud-count-val">0 / 0</span></div>
+  </div>
+
+  <!-- Left Instructions Badge -->
+  <div id="info-badge">
+    <h3>🎮 Kontrol Navigasi</h3>
+    <ul>
+      <li><key>Klik Layar</key> Kunci Kursor / FPS Look</li>
+      <li><key>W</key><key>A</key><key>S</key><key>D</key> Bergerak</li>
+      <li><key>Spasi</key> Melompat</li>
+      <li><key>Klik Kiri</key> Lempar Bola Fisika / Interaksi</li>
+      <li><key>ESC</key> Lepas Kursor</li>
+    </ul>
+  </div>
+
+  <!-- Bottom HUD Info Card -->
+  <div id="hud-card">
+    <button class="close-btn" id="hud-close">&times;</button>
+    <span class="card-tag" id="hud-tag">INFO EKSIBISI</span>
+    <h2 id="hud-title">Nama Objek</h2>
+    <p id="hud-desc">Deskripsi singkat mengenai objek yang sedang disorot atau diklik.</p>
+  </div>
+
+  <!-- Modal WebAR Marker Camera Preview -->
+  <div id="ar-modal">
+    <div class="modal-content">
+      <h2>🎴 Marker AR Card Interaktif</h2>
+      <p>Arahkan kamera smartphone ke gambar Marker ini untuk membuka profil AR 3D Syafrizal Amri Fajar, atau buka Kamera WebAR langsung.</p>
+      <div class="marker-img-wrap">
+        <img src="./assets/textures/marker.png" alt="AR Marker Pattern" />
+      </div>
+      <br/>
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+        <button class="close-modal-btn" style="background: #25D366; color: #fff;" onclick="window.open('./ar-live.html', '_blank')">📱 Buka Kamera WebAR Live</button>
+        <button class="close-modal-btn" id="ar-close-btn">Tutup Display AR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ES Module Import Maps -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./js/three.module.js"
+      }
+    }
+  </script>
+
+  <!-- Core Main Application Script -->
+  <script type="module" src="./js/app.js?v=52"></script>
+</body>
+</html>
